@@ -22,7 +22,7 @@ jobs:
           node-version: '18'
 
       - name: Install Zowe CLI
-        run: npm install -g @zowe/cli@7
+        run: npm install -g @zowe/cli@6
 
       - name: Setup Mainframe Environment and Upload COBOL Check
         env:
