@@ -16,10 +16,9 @@ run_cobolcheck() {
     echo "========================================="
     echo "Processando o programa: $program"
 
-    # Roda o gerador de testes localmente
-    ./cobolcheck -p $program
+    # Roda o Java apontando direto para o arquivo .jar na pasta bin
+    java -jar bin/cobol-check-0.2.19.jar -p $program
 
-    # Correção 2: Usa o Zowe para subir o código gerado em vez de "cp"
     if [ -f "CC##99.CBL" ]; then
         echo "Subindo o código de teste CC##99.CBL para o Mainframe..."
         zowe files upload file-to-data-set "CC##99.CBL" "${ZOWE_USERNAME}.CBL($program)"
@@ -27,8 +26,6 @@ run_cobolcheck() {
         echo "Aviso: CC##99.CBL não foi gerado para $program (Isso é normal se você ainda não escreveu os testes)"
     fi
 
-    # Correção 3: Usa o Zowe para subir o JCL. 
-    # Como entramos na pasta 'cobol-check', o JCL ficou um nível acima (../)
     if [ -f "../${program}.JCL" ]; then
         echo "Subindo o ../${program}.JCL para o Mainframe..."
         zowe files upload file-to-data-set "../${program}.JCL" "${ZOWE_USERNAME}.JCL($program)"
