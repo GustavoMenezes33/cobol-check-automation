@@ -18,7 +18,7 @@ fi
 zowe zos-files upload dir-to-uss "./cobol-check" \
      "/z/$LOWERCASE_USERNAME/cobolcheck" \
      --recursive \
-     --binary-files "**/*.jar"
+     --binary-files ".jar"
 
 # Verifica o upload
 echo "Verifying upload:"
