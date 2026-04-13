@@ -22,13 +22,13 @@ jobs:
           node-version: '18'
 
       - name: Install Zowe CLI
-        run: npm install -g @zowe/cli
+        run: npm install -g @zowe/cli@7
 
       - name: Setup Mainframe Environment and Upload COBOL Check
         env:
           ZOWE_USERNAME: ${{ secrets.ZOWE_USERNAME }}
           ZOWE_PASSWORD: ${{ secrets.ZOWE_PASSWORD }}
-        run: 
+        run: |
           zowe profiles create zosmf-profile gh-profile --host 204.90.115.200 --port 10443 --user $ZOWE_USERNAME --password $ZOWE_PASSWORD --reject-unauthorized false
           chmod +x .github/scripts/zowe_operations.sh
           .github/scripts/zowe_operations.sh
@@ -38,6 +38,5 @@ jobs:
           ZOWE_USERNAME: ${{ secrets.ZOWE_USERNAME }}
           ZOWE_PASSWORD: ${{ secrets.ZOWE_PASSWORD }}
         run: |
-          zowe profiles create zosmf-profile gh-profile --host 204.90.115.200 --port 10443 --user $ZOWE_USERNAME --password $ZOWE_PASSWORD --reject-unauthorized false
           chmod +x .github/scripts/mainframe_operations.sh
           .github/scripts/mainframe_operations.sh
