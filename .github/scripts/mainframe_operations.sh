@@ -1,53 +1,40 @@
 #!/bin/bash
 # mainframe_operations.sh
 
-# Configura ambiente
-export PATH=$PATH:/usr/lpp/java/J8.0_64/bin
-export JAVA_HOME=/usr/lpp/java/J8.0_64
-export PATH=$PATH:/usr/lpp/zowe/cli/node/bin
+ZOWE_USERNAME="Z83128"
 
-java -version
-
-ZOWE_USERNAME="Z83128"  # <-- altere para seu userid
-
-cd cobolcheck
-echo "Changed to $(pwd)"
-ls -al
-
+echo "1. Ajustando permissoes locais..."
+# Correção 1: O nome da pasta correto é com hífen
+cd cobol-check
 chmod +x cobolcheck
-echo "Made cobolcheck executable"
-
 cd scripts
 chmod +x linux_gnucobol_run_tests
-echo "Made linux_gnucobol_run_tests executable"
 cd ..
 
-# Função para executar cobolcheck e copiar arquivos
 run_cobolcheck() {
     program=$1
-    echo "Running cobolcheck for $program"
+    echo "========================================="
+    echo "Processando o programa: $program"
 
+    # Roda o gerador de testes localmente
     ./cobolcheck -p $program
-    echo "Cobolcheck completed for $program"
 
+    # Correção 2: Usa o Zowe para subir o código gerado em vez de "cp"
     if [ -f "CC##99.CBL" ]; then
-        if cp CC##99.CBL "//'${ZOWE_USERNAME}.CBL($program)'"; then
-            echo "Copied CC##99.CBL to ${ZOWE_USERNAME}.CBL($program)"
-        else
-            echo "Failed to copy CC##99.CBL"
-        fi
+        echo "Subindo o código de teste CC##99.CBL para o Mainframe..."
+        zowe files upload file-to-data-set "CC##99.CBL" "${ZOWE_USERNAME}.CBL($program)"
     else
-        echo "CC##99.CBL not found for $program"
+        echo "Aviso: CC##99.CBL não foi gerado para $program (Isso é normal se você ainda não escreveu os testes)"
     fi
 
-    if [ -f "${program}.JCL" ]; then
-        if cp ${program}.JCL "//'${ZOWE_USERNAME}.JCL($program)'"; then
-            echo "Copied ${program}.JCL"
-        else
-            echo "Failed to copy ${program}.JCL"
-        fi
+    # Correção 3: Usa o Zowe para subir o JCL. 
+    # Como entramos na pasta 'cobol-check', o JCL ficou um nível acima (../)
+    if [ -f "../${program}.JCL" ]; then
+        echo "Subindo o ../${program}.JCL para o Mainframe..."
+        zowe files upload file-to-data-set "../${program}.JCL" "${ZOWE_USERNAME}.JCL($program)"
+        echo ">> Upload de $program concluído com sucesso! <<"
     else
-        echo "${program}.JCL not found"
+        echo "ERRO FATAL: Arquivo ../${program}.JCL não encontrado!"
     fi
 }
 
@@ -56,4 +43,4 @@ for program in NUMBERS EMPPAY DEPTPAY; do
     run_cobolcheck $program
 done
 
-echo "Mainframe operations completed"
+echo "Operações do Mainframe finalizadas com sucesso!"
