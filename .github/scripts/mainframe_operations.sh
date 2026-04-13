@@ -23,7 +23,11 @@ run_cobolcheck() {
 
     # Correção: Apontando para a pasta testruns/ onde o arquivo realmente está
     if [ -f "testruns/CC##99.CBL" ]; then
-        echo "Subindo o código de teste CC##99.CBL para o Mainframe..."
+        echo "Enviando CC##99.CBL para o Unix do Mainframe (USS)..."
+        # ESTA LINHA É A CHAVE: Ela cria a pasta testruns no Mainframe e sobe o arquivo
+        zowe zos-files upload file-to-uss "testruns/CC##99.CBL" "/z/z83128/cobolcheck/testruns/CC##99.CBL"
+        
+        echo "Copiando para a biblioteca MVS (Z83128.CBL)..."
         zowe files upload file-to-data-set "testruns/CC##99.CBL" "${ZOWE_USERNAME}.CBL($program)"
     else
         echo "Aviso: testruns/CC##99.CBL não foi encontrado para $program"
