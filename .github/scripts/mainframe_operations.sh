@@ -15,6 +15,10 @@ run_cobolcheck() {
     echo "========================================="
     echo "Processando o programa: $program"
 
+    # GARANTIA: Cria a pasta testruns no Mainframe se ela não existir
+    # O z/OSMF ignora se a pasta já existir, então é seguro rodar sempre
+    zowe zos-files create uss-directory "/z/z83128/cobolcheck/testruns" 2>/dev/null || true
+
     # Apaga o teste do programa anterior para não subir lixo
     rm -f testruns/CC##99.CBL
     
