@@ -15,6 +15,9 @@ run_cobolcheck() {
     echo "========================================="
     echo "Processando o programa: $program"
 
+    # Apaga o teste do programa anterior para não subir lixo
+    rm -f testruns/CC##99.CBL
+    
     # Roda o Java (ele vai dar o erro 'cobc: not found', mas vai gerar o código!)
     java -jar bin/cobol-check-0.2.19.jar -p $program
 
